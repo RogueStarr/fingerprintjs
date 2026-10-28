@@ -114,7 +114,13 @@ async function getSelectorsFromDirectory(directoryPath: string) {
     const filterName = nameMatch[1]
     const selectors = new Set<string>()
 
-    await eachLineInFile(path.join(inputDirectory, directoryItem.name), (line) => {
+    // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
+    // Resolve and validate the file path to prevent path traversal
+    const filePath = path.resolve(directoryPath, directoryItem.name)
+    if (!filePath.startsWith(path.resolve(directoryPath) + path.sep)) {
+      throw new Error(`Refusing to read outside ${directoryPath}`)
+    }
+    await eachLineInFile(filePath, (line) => {
       const selector = line.trim()
       if (selector) {
         selectors.add(selector)

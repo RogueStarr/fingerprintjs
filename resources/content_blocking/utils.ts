@@ -93,9 +93,9 @@ export async function fetchFilter(
   return filterLines
 }
 
-export function runCommand(command: string, options: SpawnOptions = {}): Promise<void> {
+export function runCommand(command: string, args: readonly string[] = [], options: SpawnOptions = {}): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    const child = spawn(command, [], { shell: true, ...options })
+    const child = spawn(command, args, { shell: false, ...options })
     child.stdout?.pipe(process.stdout)
     child.stderr?.pipe(process.stderr)
     child.on('error', reject)
